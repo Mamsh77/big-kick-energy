@@ -22,7 +22,7 @@ button:disabled{opacity:.38;cursor:not-allowed}.player-row{border:1px solid var(
 <body>
 <main class="container">
 <section class="card" id="loginCard">
-  <div class="subtitle">Indoor soccer • 6-a-side • 8 weeks</div>
+  <div class="subtitle">Indoor soccer • 5-a-side • 8 weeks</div>
   <h1>Big Kick Energy😫😈✨ Availability</h1>
   <p class="muted">Test login: enter the email address linked to your player name.</p>
   <form id="loginForm">
@@ -210,7 +210,39 @@ button:disabled{opacity:.38;cursor:not-allowed}.player-row{border:1px solid var(
       `;
 
       game.appendChild(top);
+      
+const playersOnField = 5;
+const desiredPlayers = 6; // 5 playing + 1 sub
+const playersNeeded = desiredPlayers - counts.available;
 
+const alert = document.createElement("div");
+
+if (playersNeeded > 0) {
+  alert.className = "warning";
+
+  if (counts.available < playersOnField) {
+    alert.innerHTML = `
+      🚨 <strong>ALERT: YOU NEED PLAYERS!</strong><br>
+      ${counts.available} confirmed.
+      You need ${playersNeeded} more ${playersNeeded === 1 ? "player" : "players"}
+      to have 5 players plus 1 sub.
+    `;
+  } else {
+    alert.innerHTML = `
+      ⚠️ <strong>YOU NEED A SUB!</strong><br>
+      You have 5 players confirmed, but no sub yet.
+    `;
+  }
+} else {
+  alert.className = "message";
+  alert.innerHTML = `
+    ✅ <strong>Team covered!</strong>
+    ${counts.available} players confirmed, including at least 1 sub.
+  `;
+}
+
+game.appendChild(alert);
+      
       players.forEach(player => {
         const row = document.createElement("div");
         row.className =
