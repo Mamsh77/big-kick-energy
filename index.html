@@ -248,7 +248,7 @@ function renderNextGameSummary() {
     let answered = 0;
 
     games.forEach(([dateKey,dateLabel], index) => {
-      if (state[currentPlayer][dateKey]) {
+      if (state[currentPlayer][dateKey]?.status) {
         answered++;
       }
 
@@ -259,7 +259,7 @@ function renderNextGameSummary() {
       };
 
       players.forEach(player => {
-        const value = state[player][dateKey];
+        const value = state[player][dateKey]?.status;
 
         if (value) {
           counts[value]++;
@@ -290,33 +290,33 @@ const playersOnField = 5;
 const desiredPlayers = 6; // 5 playing + 1 sub
 const playersNeeded = desiredPlayers - counts.available;
 
-const alert = document.createElement("div");
+const gameAlert = document.createElement("div");
 
 if (playersNeeded > 0) {
-  alert.className = "warning";
+  gameAlert.className = "warning";
 
   if (counts.available < playersOnField) {
-    alert.innerHTML = `
+    gameAlert.innerHTML = `
       🚨 <strong>ALERT: YOU NEED PLAYERS!</strong><br>
       ${counts.available} confirmed.
       You need ${playersNeeded} more ${playersNeeded === 1 ? "player" : "players"}
       to have 5 players, plus at least 1 sub.
     `;
   } else {
-    alert.innerHTML = `
+    gameAlert.innerHTML = `
       ⚠️ <strong>YOU NEED A SUB!</strong><br>
       You have 5 players confirmed, but no subs yet.
     `;
   }
 } else {
-  alert.className = "message";
-  alert.innerHTML = `
+  gameAlert.className = "message";
+  gameAlert.innerHTML = `
     ✅ <strong>Team covered!</strong>
     ${counts.available} players confirmed, including at least 1 sub.
   `;
 }
 
-game.appendChild(alert);
+game.appendChild(gameAlert);
       
  const displayPlayers = [
   currentPlayer,
@@ -328,10 +328,32 @@ displayPlayers.forEach(player => {
   row.className =
     "player-row" + (player === currentPlayer ? " you" : "");
 
-  const name = document.createElement("div");
-  name.className = "player-name";
-  name.textContent =
-    player === currentPlayer ? player + " • you" : player;
+const name = document.createElement("div");
+name.className = "player-name";
+
+const playerEntry = state[player][dateKey];
+
+let updatedText = "";
+
+if (playerEntry?.updated_at) {
+  const updatedDate = new Date(playerEntry.updated_at + "Z");
+
+  updatedText = `
+    <div class="muted">
+      Last updated: ${updatedDate.toLocaleString("en-AU", {
+        day: "numeric",
+        month: "short",
+        hour: "numeric",
+        minute: "2-digit"
+      })}
+    </div>
+  `;
+}
+
+name.innerHTML = `
+  ${player === currentPlayer ? player + " • you" : player}
+  ${updatedText}
+`;
 
   const buttons = document.createElement("div");
   buttons.className = "buttons";
@@ -342,7 +364,7 @@ displayPlayers.forEach(player => {
     button.disabled = player !== currentPlayer;
     button.textContent = `${status.icon} ${status.label}`;
 
-    if (state[player][dateKey] === status.key) {
+    if (state[player][dateKey]?.status === status.key) {
       button.classList.add("selected");
     }
 
@@ -360,7 +382,10 @@ displayPlayers.forEach(player => {
           status.key
         );
 
-        state[currentPlayer][dateKey] = status.key;
+        state[currentPlayer][dateKey] = {
+  status: status.key,
+  updated_at: new Date().toISOString()
+};
         render();
       } catch (error) {
         console.error(error);
