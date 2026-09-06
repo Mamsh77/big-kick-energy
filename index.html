@@ -182,7 +182,7 @@ function renderNextGameSummary() {
     `;
   } else if (counts.available === 5) {
     teamMessage = `
-      ⚠️ <strong>Team available, but you still need 1 sub.</strong>
+      ⚠️ <strong>Team available, but you still need at least 1 sub.</strong>
     `;
   } else {
     teamMessage = `
@@ -297,7 +297,7 @@ if (playersNeeded > 0) {
       🚨 <strong>ALERT: YOU NEED PLAYERS!</strong><br>
       ${counts.available} confirmed.
       You need ${playersNeeded} more ${playersNeeded === 1 ? "player" : "players"}
-      to have 5 players plus 1 sub.
+      to have 5 players, plus at least 1 sub.
     `;
   } else {
     alert.innerHTML = `
