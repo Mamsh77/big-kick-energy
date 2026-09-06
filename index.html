@@ -47,7 +47,7 @@ button:disabled{opacity:.38;cursor:not-allowed}.player-row{border:1px solid var(
       <button id="logout" type="button">Log out</button>
     </div>
     <p class="muted">You can change only your own availability. Other players are read-only.</p>
-    <div class="warning"><strong>Prototype:</strong> this checks the email in the browser only. It is not secure authentication yet, and responses are not shared between devices.</div>
+    <div class="warning"><strong>Prototype:</strong> this currently checks the email address in the browser only. Availability is shared between devices, but secure authentication has not been added yet.</div>
   </section>
 
   <div id="summary" class="summary"></div>
@@ -62,6 +62,7 @@ button:disabled{opacity:.38;cursor:not-allowed}.player-row{border:1px solid var(
   };
 
   const players = ["Viv","Di","Jo","Julie","KJ","Kell","Cath","Maiz"];
+
   const games = [
     ["2026-09-13","Sunday 13 September"],
     ["2026-09-20","Sunday 20 September"],
@@ -72,14 +73,16 @@ button:disabled{opacity:.38;cursor:not-allowed}.player-row{border:1px solid var(
     ["2026-10-25","Sunday 25 October"],
     ["2026-11-01","Sunday 1 November"]
   ];
+
   const statuses = [
-    {key:"yes",icon:"✅",label:"Available"},
-    {key:"maybe",icon:"❓",label:"Unsure"},
-    {key:"no",icon:"❌",label:"Unavailable"}
+    {key:"available",icon:"✅",label:"Available"},
+    {key:"unsure",icon:"❓",label:"Unsure"},
+    {key:"unavailable",icon:"❌",label:"Unavailable"}
   ];
 
   const state = {};
-  players.forEach(p => state[p] = {});
+  players.forEach(player => state[player] = {});
+
   let currentPlayer = null;
 
   const loginForm = document.getElementById("loginForm");
@@ -90,8 +93,45 @@ button:disabled{opacity:.38;cursor:not-allowed}.player-row{border:1px solid var(
   const gamesEl = document.getElementById("games");
   const summary = document.getElementById("summary");
 
-  loginForm.addEventListener("submit", e => {
+  async function loadAvailability() {
+    const response = await fetch("/api/availability");
+
+    if (!response.ok) {
+      throw new Error("Could not load availability");
+    }
+
+    const rows = await response.json();
+
+    rows.forEach(row => {
+      if (state[row.player]) {
+        state[row.player][row.game_date] = row.status;
+      }
+    });
+  }
+
+  async function saveAvailability(player, gameDate, status) {
+    const response = await fetch("/api/availability", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        player: player,
+        game_date: gameDate,
+        status: status
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error("Could not save availability");
+    }
+
+    return response.json();
+  }
+
+  loginForm.addEventListener("submit", async e => {
     e.preventDefault();
+
     const email = emailInput.value.trim().toLowerCase();
     const player = playerEmails[email];
 
@@ -100,12 +140,23 @@ button:disabled{opacity:.38;cursor:not-allowed}.player-row{border:1px solid var(
       return;
     }
 
-    currentPlayer = player;
-    loginMessage.textContent = "";
-    loginCard.classList.add("hidden");
-    app.classList.remove("hidden");
-    document.getElementById("signedInName").textContent = currentPlayer;
-    render();
+    loginMessage.textContent = "Loading availability...";
+
+    try {
+      await loadAvailability();
+
+      currentPlayer = player;
+      loginMessage.textContent = "";
+      loginCard.classList.add("hidden");
+      app.classList.remove("hidden");
+
+      document.getElementById("signedInName").textContent = currentPlayer;
+
+      render();
+    } catch (error) {
+      console.error(error);
+      loginMessage.textContent = "Could not load availability. Please try again.";
+    }
   });
 
   document.getElementById("logout").addEventListener("click", () => {
@@ -122,12 +173,22 @@ button:disabled{opacity:.38;cursor:not-allowed}.player-row{border:1px solid var(
     let answered = 0;
 
     games.forEach(([dateKey,dateLabel], index) => {
-      if (state[currentPlayer][dateKey]) answered++;
+      if (state[currentPlayer][dateKey]) {
+        answered++;
+      }
 
-      const counts = {yes:0,maybe:0,no:0};
-      players.forEach(p => {
-        const value = state[p][dateKey];
-        if (value) counts[value]++;
+      const counts = {
+        available: 0,
+        unsure: 0,
+        unavailable: 0
+      };
+
+      players.forEach(player => {
+        const value = state[player][dateKey];
+
+        if (value) {
+          counts[value]++;
+        }
       });
 
       const game = document.createElement("section");
@@ -135,17 +196,30 @@ button:disabled{opacity:.38;cursor:not-allowed}.player-row{border:1px solid var(
 
       const top = document.createElement("div");
       top.className = "game-top";
-      top.innerHTML = `<div><div><strong>Game ${index+1}</strong></div><div class="muted">${dateLabel}</div></div>
-        <div class="counts">${counts.yes} confirmed • ${counts.maybe} unsure • ${counts.no} unavailable</div>`;
+
+      top.innerHTML = `
+        <div>
+          <div><strong>Game ${index + 1}</strong></div>
+          <div class="muted">${dateLabel}</div>
+        </div>
+        <div class="counts">
+          ${counts.available} confirmed •
+          ${counts.unsure} unsure •
+          ${counts.unavailable} unavailable
+        </div>
+      `;
+
       game.appendChild(top);
 
       players.forEach(player => {
         const row = document.createElement("div");
-        row.className = "player-row" + (player === currentPlayer ? " you" : "");
+        row.className =
+          "player-row" + (player === currentPlayer ? " you" : "");
 
         const name = document.createElement("div");
         name.className = "player-name";
-        name.textContent = player === currentPlayer ? player + " • you" : player;
+        name.textContent =
+          player === currentPlayer ? player + " • you" : player;
 
         const buttons = document.createElement("div");
         buttons.className = "buttons";
@@ -156,12 +230,32 @@ button:disabled{opacity:.38;cursor:not-allowed}.player-row{border:1px solid var(
           button.disabled = player !== currentPlayer;
           button.textContent = `${status.icon} ${status.label}`;
 
-          if (state[player][dateKey] === status.key) button.classList.add("selected");
+          if (state[player][dateKey] === status.key) {
+            button.classList.add("selected");
+          }
 
-          button.addEventListener("click", () => {
-            if (player !== currentPlayer) return;
-            state[player][dateKey] = status.key;
-            render();
+          button.addEventListener("click", async () => {
+            if (player !== currentPlayer) {
+              return;
+            }
+
+            button.disabled = true;
+
+            try {
+              await saveAvailability(
+                currentPlayer,
+                dateKey,
+                status.key
+              );
+
+              state[currentPlayer][dateKey] = status.key;
+
+              render();
+            } catch (error) {
+              console.error(error);
+              alert("Your availability could not be saved. Please try again.");
+              render();
+            }
           });
 
           buttons.appendChild(button);
@@ -174,7 +268,8 @@ button:disabled{opacity:.38;cursor:not-allowed}.player-row{border:1px solid var(
       gamesEl.appendChild(game);
     });
 
-    summary.textContent = `${currentPlayer}: ${answered}/8 games answered`;
+    summary.textContent =
+      `${currentPlayer}: ${answered}/8 games answered`;
   }
 })();
 </script>
