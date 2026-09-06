@@ -315,59 +315,63 @@ if (playersNeeded > 0) {
 
 game.appendChild(alert);
       
-      players.forEach(player => {
-        const row = document.createElement("div");
-        row.className =
-          "player-row" + (player === currentPlayer ? " you" : "");
+ const displayPlayers = [
+  currentPlayer,
+  ...players.filter(player => player !== currentPlayer)
+];
 
-        const name = document.createElement("div");
-        name.className = "player-name";
-        name.textContent =
-          player === currentPlayer ? player + " • you" : player;
+displayPlayers.forEach(player => {
+  const row = document.createElement("div");
+  row.className =
+    "player-row" + (player === currentPlayer ? " you" : "");
 
-        const buttons = document.createElement("div");
-        buttons.className = "buttons";
+  const name = document.createElement("div");
+  name.className = "player-name";
+  name.textContent =
+    player === currentPlayer ? player + " • you" : player;
 
-        statuses.forEach(status => {
-          const button = document.createElement("button");
-          button.type = "button";
-          button.disabled = player !== currentPlayer;
-          button.textContent = `${status.icon} ${status.label}`;
+  const buttons = document.createElement("div");
+  buttons.className = "buttons";
 
-          if (state[player][dateKey] === status.key) {
-            button.classList.add("selected");
-          }
+  statuses.forEach(status => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.disabled = player !== currentPlayer;
+    button.textContent = `${status.icon} ${status.label}`;
 
-          button.addEventListener("click", async () => {
-            if (player !== currentPlayer) {
-              return;
-            }
+    if (state[player][dateKey] === status.key) {
+      button.classList.add("selected");
+    }
 
-            button.disabled = true;
+    button.addEventListener("click", async () => {
+      if (player !== currentPlayer) {
+        return;
+      }
 
-            try {
-              await saveAvailability(
-                currentPlayer,
-                dateKey,
-                status.key
-              );
+      button.disabled = true;
 
-              state[currentPlayer][dateKey] = status.key;
+      try {
+        await saveAvailability(
+          currentPlayer,
+          dateKey,
+          status.key
+        );
 
-              render();
-            } catch (error) {
-              console.error(error);
-              alert("Your availability could not be saved. Please try again.");
-              render();
-            }
-          });
+        state[currentPlayer][dateKey] = status.key;
+        render();
+      } catch (error) {
+        console.error(error);
+        alert("Your availability could not be saved. Please try again.");
+        render();
+      }
+    });
 
-          buttons.appendChild(button);
-        });
+    buttons.appendChild(button);
+  });
 
-        row.append(name, buttons);
-        game.appendChild(row);
-      });
+  row.append(name, buttons);
+  game.appendChild(row);
+});
 
       gamesEl.appendChild(game);
     });
