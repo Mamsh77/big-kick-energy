@@ -5,7 +5,7 @@ export default {
     // Get everyone's saved availability
     if (url.pathname === "/api/availability" && request.method === "GET") {
       const results = await env.DB
-        .prepare("SELECT player, game_date, status FROM availability")
+        .prepare("SELECT player, game_date, status, updated_at FROM availability")
         .all();
 
       return Response.json(results.results);
