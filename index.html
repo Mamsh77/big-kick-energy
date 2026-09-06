@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mind the Gap Availability</title>
+<style>
+:root{--bg:#f7f7fb;--card:#fff;--text:#222;--muted:#686875;--border:#d9d9e3;--accent:#6b4bb8;--accentLight:#eee8fb;--warning:#fff4cf}
+*{box-sizing:border-box} body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
+.container{max-width:900px;margin:auto;padding:18px}.card,.game{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px;margin-bottom:14px}
+h1,h2,h3,p{margin-top:0}.subtitle,.muted,.counts{color:var(--muted);font-size:14px}
+.login-row,.game-top,.player-row,.buttons{display:flex;flex-wrap:wrap;gap:10px}.login-row{align-items:end}.game-top,.player-row{justify-content:space-between;align-items:center}
+label{display:block;font-size:14px;font-weight:bold;margin-bottom:6px}input{min-width:260px;padding:12px;border:1px solid var(--border);border-radius:12px;font-size:16px}
+button{min-height:44px;border:1px solid var(--border);background:#fff;border-radius:12px;padding:10px 13px;font-size:14px;cursor:pointer}
+button.primary{background:var(--accent);color:#fff;border-color:var(--accent)}button.selected{background:var(--accentLight);border-color:var(--accent);font-weight:bold}
+button:disabled{opacity:.38;cursor:not-allowed}.player-row{border:1px solid var(--border);border-radius:13px;padding:11px;margin-top:9px}.player-row.you{background:var(--accentLight);border-color:var(--accent)}
+.player-name{font-weight:bold}.message{margin-top:12px;font-size:14px}.warning{background:var(--warning);border-radius:12px;padding:10px;margin-top:10px;font-size:14px}
+.hidden{display:none}.summary{display:inline-block;border:1px solid var(--border);border-radius:999px;padding:8px 12px;margin-bottom:12px;color:var(--muted);font-size:14px}
+@media(max-width:600px){.container{padding:10px}.login-row>div{width:100%}input{width:100%;min-width:0}.buttons{width:100%}.buttons button{flex:1 1 100%}.player-row{align-items:stretch}}
+</style>
+</head>
+<body>
+<main class="container">
+<section class="card" id="loginCard">
+  <div class="subtitle">Indoor soccer • 6-a-side • 8 weeks</div>
+  <h1>⚽ Mind the Gap Availability</h1>
+  <p class="muted">Test login: enter the email address linked to your player name.</p>
+  <form id="loginForm">
+    <div class="login-row">
+      <div>
+        <label for="email">Email address</label>
+        <input id="email" type="email" autocomplete="email" placeholder="name@example.com" required>
+      </div>
+      <button class="primary" type="submit">Continue</button>
+    </div>
+  </form>
+  <div id="loginMessage" class="message" aria-live="polite"></div>
+</section>
+
+<section id="app" class="hidden">
+  <section class="card">
+    <div class="game-top">
+      <div>
+        <div class="subtitle">Signed in as</div>
+        <h2 id="signedInName">Maiz</h2>
+      </div>
+      <button id="logout" type="button">Log out</button>
+    </div>
+    <p class="muted">You can change only your own availability. Other players are read-only.</p>
+    <div class="warning"><strong>Prototype:</strong> this checks the email in the browser only. It is not secure authentication yet, and responses are not shared between devices.</div>
+  </section>
+
+  <div id="summary" class="summary"></div>
+  <div id="games"></div>
+</section>
+</main>
+
+<script>
+(() => {
+  const playerEmails = {
+    "mary.surawski@gmail.com": "Maiz"
+  };
+
+  const players = ["Viv","Di","Jo","Julie","KJ","Kell","Cath","Maiz"];
+  const games = [
+    ["2026-09-13","Sunday 13 September"],
+    ["2026-09-20","Sunday 20 September"],
+    ["2026-09-27","Sunday 27 September"],
+    ["2026-10-04","Sunday 4 October"],
+    ["2026-10-11","Sunday 11 October"],
+    ["2026-10-18","Sunday 18 October"],
+    ["2026-10-25","Sunday 25 October"],
+    ["2026-11-01","Sunday 1 November"]
+  ];
+  const statuses = [
+    {key:"yes",icon:"✅",label:"Available"},
+    {key:"maybe",icon:"❓",label:"Unsure"},
+    {key:"no",icon:"❌",label:"Unavailable"}
+  ];
+
+  const state = {};
+  players.forEach(p => state[p] = {});
+  let currentPlayer = null;
+
+  const loginForm = document.getElementById("loginForm");
+  const emailInput = document.getElementById("email");
+  const loginMessage = document.getElementById("loginMessage");
+  const loginCard = document.getElementById("loginCard");
+  const app = document.getElementById("app");
+  const gamesEl = document.getElementById("games");
+  const summary = document.getElementById("summary");
+
+  loginForm.addEventListener("submit", e => {
+    e.preventDefault();
+    const email = emailInput.value.trim().toLowerCase();
+    const player = playerEmails[email];
+
+    if (!player) {
+      loginMessage.textContent = "That email is not linked to a player yet.";
+      return;
+    }
+
+    currentPlayer = player;
+    loginMessage.textContent = "";
+    loginCard.classList.add("hidden");
+    app.classList.remove("hidden");
+    document.getElementById("signedInName").textContent = currentPlayer;
+    render();
+  });
+
+  document.getElementById("logout").addEventListener("click", () => {
+    currentPlayer = null;
+    emailInput.value = "";
+    app.classList.add("hidden");
+    loginCard.classList.remove("hidden");
+    loginMessage.textContent = "";
+    emailInput.focus();
+  });
+
+  function render() {
+    gamesEl.innerHTML = "";
+    let answered = 0;
+
+    games.forEach(([dateKey,dateLabel], index) => {
+      if (state[currentPlayer][dateKey]) answered++;
+
+      const counts = {yes:0,maybe:0,no:0};
+      players.forEach(p => {
+        const value = state[p][dateKey];
+        if (value) counts[value]++;
+      });
+
+      const game = document.createElement("section");
+      game.className = "game";
+
+      const top = document.createElement("div");
+      top.className = "game-top";
+      top.innerHTML = `<div><div><strong>Game ${index+1}</strong></div><div class="muted">${dateLabel}</div></div>
+        <div class="counts">${counts.yes} confirmed • ${counts.maybe} unsure • ${counts.no} unavailable</div>`;
+      game.appendChild(top);
+
+      players.forEach(player => {
+        const row = document.createElement("div");
+        row.className = "player-row" + (player === currentPlayer ? " you" : "");
+
+        const name = document.createElement("div");
+        name.className = "player-name";
+        name.textContent = player === currentPlayer ? player + " • you" : player;
+
+        const buttons = document.createElement("div");
+        buttons.className = "buttons";
+
+        statuses.forEach(status => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.disabled = player !== currentPlayer;
+          button.textContent = `${status.icon} ${status.label}`;
+
+          if (state[player][dateKey] === status.key) button.classList.add("selected");
+
+          button.addEventListener("click", () => {
+            if (player !== currentPlayer) return;
+            state[player][dateKey] = status.key;
+            render();
+          });
+
+          buttons.appendChild(button);
+        });
+
+        row.append(name, buttons);
+        game.appendChild(row);
+      });
+
+      gamesEl.appendChild(game);
+    });
+
+    summary.textContent = `${currentPlayer}: ${answered}/8 games answered`;
+  }
+})();
+</script>
+</body>
+</html>
