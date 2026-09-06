@@ -1,0 +1,14 @@
+{
+  "name": "big-kick-energy",
+  "compatibility_date": "2026-09-03",
+  "assets": {
+    "directory": "."
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "big-kick-energy",
+      "database_id": "c74142c1-7b7f-47dd-8a7f-6e7dc4351a1e"
+    }
+  ]
+}
