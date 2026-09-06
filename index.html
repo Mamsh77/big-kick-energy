@@ -115,8 +115,11 @@ button:disabled{opacity:.38;cursor:not-allowed}.player-row{border:1px solid var(
 
     rows.forEach(row => {
       if (state[row.player]) {
-        state[row.player][row.game_date] = row.status;
-      }
+   state[row.player][row.game_date] = {
+      status: row.status,
+      updated_at: row.updated_at
+    };
+  }
     });
   }
 
@@ -163,7 +166,7 @@ function renderNextGameSummary() {
   };
 
   players.forEach(player => {
-    const status = state[player][dateKey];
+    const status = state[player][dateKey]?.status;
 
     if (status) {
       counts[status]++;
