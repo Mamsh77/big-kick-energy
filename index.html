@@ -24,6 +24,9 @@ button:disabled{opacity:.38;cursor:not-allowed}.player-row{border:1px solid var(
 <section class="card" id="loginCard">
   <div class="subtitle">Indoor soccer • 5-a-side • 8 weeks</div>
   <h1>Big Kick Energy😫😈✨ Availability</h1>
+  <div id="nextGameSummary" class="warning">
+  Loading current availability...
+</div>
   <p class="muted">Test login: enter the email address linked to your player name.</p>
   <form id="loginForm">
     <div class="login-row">
@@ -92,6 +95,7 @@ button:disabled{opacity:.38;cursor:not-allowed}.player-row{border:1px solid var(
   const app = document.getElementById("app");
   const gamesEl = document.getElementById("games");
   const summary = document.getElementById("summary");
+  const nextGameSummaryEl = document.getElementById("nextGameSummary");
 
   async function loadAvailability() {
     const response = await fetch("/api/availability");
@@ -128,7 +132,68 @@ button:disabled{opacity:.38;cursor:not-allowed}.player-row{border:1px solid var(
 
     return response.json();
   }
+function renderNextGameSummary() {
+  const now = new Date();
 
+  const nextGame = games.find(([dateKey]) => {
+    const gameDate = new Date(`${dateKey}T23:59:59`);
+    return gameDate >= now;
+  });
+
+  if (!nextGame) {
+    nextGameSummaryEl.innerHTML = `
+      ⚽ <strong>No upcoming games scheduled.</strong>
+    `;
+    return;
+  }
+
+  const [dateKey, dateLabel] = nextGame;
+
+  const counts = {
+    available: 0,
+    unsure: 0,
+    unavailable: 0
+  };
+
+  players.forEach(player => {
+    const status = state[player][dateKey];
+
+    if (status) {
+      counts[status]++;
+    }
+  });
+
+  const desiredPlayers = 6;
+  const playersNeeded = desiredPlayers - counts.available;
+
+  let teamMessage = "";
+
+  if (counts.available < 5) {
+    teamMessage = `
+      🚨 <strong>Need ${playersNeeded} more
+      ${playersNeeded === 1 ? "player" : "players"}.</strong>
+    `;
+  } else if (counts.available === 5) {
+    teamMessage = `
+      ⚠️ <strong>Team available, but you still need 1 sub.</strong>
+    `;
+  } else {
+    teamMessage = `
+      ✅ <strong>Team covered!</strong>
+    `;
+  }
+
+  nextGameSummaryEl.innerHTML = `
+    <strong>⚽ Next game: ${dateLabel}</strong><br><br>
+
+    ✅ ${counts.available} available &nbsp;
+    ❓ ${counts.unsure} unsure &nbsp;
+    ❌ ${counts.unavailable} unavailable
+
+    <br><br>
+    ${teamMessage}
+  `;
+}
   loginForm.addEventListener("submit", async e => {
     e.preventDefault();
 
@@ -303,6 +368,18 @@ game.appendChild(alert);
     summary.textContent =
       `${currentPlayer}: ${answered}/8 games answered`;
   }
+    (async function loadLoginSummary() {
+    try {
+      await loadAvailability();
+      renderNextGameSummary();
+    } catch (error) {
+      console.error(error);
+      nextGameSummaryEl.innerHTML = `
+        ⚠️ Current availability could not be loaded.
+      `;
+    }
+  })();
+  
 })();
 </script>
 </body>
