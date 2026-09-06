@@ -47,7 +47,7 @@ button:disabled{opacity:.38;cursor:not-allowed}.player-row{border:1px solid var(
         <div class="subtitle">Signed in as</div>
         <h2 id="signedInName">Maiz</h2>
       </div>
-      <button id="logout" type="button">Log out</button>
+     <button id="logout" type="button">Save & Log out</button>
     </div>
     <p class="muted">You can change only your own availability. Other players are read-only.</p>
     <div class="warning"><strong>Prototype:</strong> this currently checks the email address in the browser only. Availability is shared between devices, but secure authentication has not been added yet.</div>
@@ -378,6 +378,22 @@ displayPlayers.forEach(player => {
 
     summary.textContent =
       `${currentPlayer}: ${answered}/8 games answered`;
+    const bottomLogout = document.createElement("button");
+bottomLogout.type = "button";
+bottomLogout.textContent = "Save & Log out";
+bottomLogout.className = "primary";
+bottomLogout.style.marginTop = "16px";
+
+bottomLogout.addEventListener("click", () => {
+  currentPlayer = null;
+  emailInput.value = "";
+  app.classList.add("hidden");
+  loginCard.classList.remove("hidden");
+  loginMessage.textContent = "";
+  emailInput.focus();
+});
+
+gamesEl.appendChild(bottomLogout);
   }
     (async function loadLoginSummary() {
     try {
