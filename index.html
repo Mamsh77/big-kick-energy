@@ -17,6 +17,36 @@ button:disabled{opacity:.38;cursor:not-allowed}.player-row{border:1px solid var(
 .player-name{font-weight:bold}.message{margin-top:12px;font-size:14px}.warning{background:var(--warning);border-radius:12px;padding:10px;margin-top:10px;font-size:14px}
 .hidden{display:none}.summary{display:inline-block;border:1px solid var(--border);border-radius:999px;padding:8px 12px;margin-bottom:12px;color:var(--muted);font-size:14px}
 @media(max-width:600px){.container{padding:10px}.login-row>div{width:100%}input{width:100%;min-width:0}.buttons{width:100%}.buttons button{flex:1 1 100%}.player-row{align-items:stretch}}
+/* Make selected availability stand out */
+button.selected.available{
+  background:#20b943;
+  border-color:#159c34;
+  color:white;
+  font-weight:bold;
+}
+
+button.selected.unsure{
+  background:#fff1b8;
+  border-color:#e5ad16;
+  color:#7a5600;
+  font-weight:bold;
+}
+
+button.selected.unavailable{
+  background:#ffe4e7;
+  border-color:#e5394f;
+  color:#b6162c;
+  font-weight:bold;
+}
+
+/* Keep other players' selections visible */
+button:disabled:not(.selected){
+  opacity:.32;
+}
+
+button:disabled.selected{
+  opacity:.85;
+}
 </style>
 </head>
 <body>
@@ -368,6 +398,7 @@ name.innerHTML = `
     button.type = "button";
     button.disabled = player !== currentPlayer;
     button.textContent = `${status.icon} ${status.label}`;
+    button.classList.add(status.key);
 
     if (state[player][dateKey]?.status === status.key) {
       button.classList.add("selected");
