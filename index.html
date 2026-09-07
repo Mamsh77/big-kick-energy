@@ -73,16 +73,15 @@ button:disabled{opacity:.38;cursor:not-allowed}.player-row{border:1px solid var(
 
   const players = ["Viv","Di","Jo","Julie","KJ","Kell","Cath","Maiz"];
 
-  const games = [
-    ["2026-09-13","Sunday 13 September"],
-    ["2026-09-20","Sunday 20 September"],
-    ["2026-09-27","Sunday 27 September"],
-    ["2026-10-04","Sunday 4 October"],
-    ["2026-10-11","Sunday 11 October"],
-    ["2026-10-18","Sunday 18 October"],
-    ["2026-10-25","Sunday 25 October"],
-    ["2026-11-01","Sunday 1 November"]
-  ];
+const games = [
+  ["2026-09-13", "Sunday 13 September", "Pitch Please Ladies", "4:10pm", "Court 3", "Round 5"],
+  ["2026-09-20", "Sunday 20 September", "Brisy Blitz", "4:10pm", "Court 3", "Round 6"],
+  ["2026-09-27", "Sunday 27 September", "Boots & Banter", "2:50pm", "Court 3", "Round 7"],
+  ["2026-10-04", "Sunday 4 October", "Tartar Superstars", "4:10pm", "Court 3", "Round 8"],
+  ["2026-10-11", "Sunday 11 October", "Not Fast Just Furious", "1:30pm", "Court 5", "Round 9"],
+  ["2026-10-18", "Sunday 18 October", "Bruises Utd", "4:10pm", "Court 3", "Round 10"],
+  ["2026-10-25", "Sunday 25 October", "Sexy Pandas", "4:10pm", "Court 3", "Round 11"]
+];
 
   const statuses = [
     {key:"available",icon:"✅",label:"Available"},
@@ -247,7 +246,7 @@ function renderNextGameSummary() {
     gamesEl.innerHTML = "";
     let answered = 0;
 
-    games.forEach(([dateKey,dateLabel], index) => {
+    games.forEach(([dateKey, dateLabel, opponent, time, court, round], index) => {
       if (state[currentPlayer][dateKey]?.status) {
         answered++;
       }
@@ -272,17 +271,23 @@ function renderNextGameSummary() {
       const top = document.createElement("div");
       top.className = "game-top";
 
-      top.innerHTML = `
-        <div>
-          <div><strong>Game ${index + 1}</strong></div>
-          <div class="muted">${dateLabel}</div>
-        </div>
-        <div class="counts">
-          ${counts.available} confirmed •
-          ${counts.unsure} unsure •
-          ${counts.unavailable} unavailable
-        </div>
-      `;
+     top.innerHTML = `
+  <div>
+    <div class="subtitle">${round}</div>
+    <h3 style="margin-bottom:6px;">⚽ Big Kick Energy vs ${opponent}</h3>
+    <div class="muted">
+      📅 ${dateLabel} &nbsp;•&nbsp;
+      🕓 ${time} &nbsp;•&nbsp;
+      📍 ${court}
+    </div>
+  </div>
+
+  <div class="counts">
+    ${counts.available} confirmed •
+    ${counts.unsure} unsure •
+    ${counts.unavailable} unavailable
+  </div>
+`;
 
       game.appendChild(top);
       
@@ -405,7 +410,7 @@ name.innerHTML = `
     });
 
     summary.textContent =
-      `${currentPlayer}: ${answered}/8 games answered`;
+      `${currentPlayer}: ${answered}/${games.length} games answered`;
     const bottomLogout = document.createElement("button");
 bottomLogout.type = "button";
 bottomLogout.textContent = "Save & Log out";
