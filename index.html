@@ -275,10 +275,16 @@ button:disabled.selected {
         You can change only your own availability. Other players are read-only.
       </p>
 
-      <div class="warning">
+      <div id="prototypeNotice" class="warning">
         <strong>Prototype:</strong>
         this currently checks the email address in the browser only.
         Availability is shared between devices, but secure authentication has not been added yet.
+      </div>
+
+      <div id="demoNotice" class="warning hidden">
+        <strong>🧪 Demo Mode:</strong>
+        this is a private sandbox with fake players and fake availability.
+        Changes are temporary and do not affect Big Kick Energy's real data.
       </div>
     </section>
 
@@ -376,8 +382,74 @@ button:disabled.selected {
     state[player] = {};
   });
 
-  // Temporary until Demo Mode gets its own separate local state.
-  state["Demo Player"] = {};
+  const demoPlayers = [
+    "Demo Player",
+    "Alex",
+    "Sam",
+    "Jess",
+    "Casey",
+    "Taylor",
+    "Morgan",
+    "Riley"
+  ];
+
+  function createDemoState() {
+    const demo = {};
+
+    demoPlayers.forEach(player => {
+      demo[player] = {};
+    });
+
+    const setDemoStatus = (player, gameDate, status) => {
+      demo[player][gameDate] = { status };
+    };
+
+    // Round 5: 5 confirmed, so the demo starts with "YOU NEED A SUB!"
+    ["Alex", "Sam", "Jess", "Casey", "Taylor"].forEach(player => {
+      setDemoStatus(player, "2026-09-13", "available");
+    });
+    setDemoStatus("Morgan", "2026-09-13", "unsure");
+    setDemoStatus("Riley", "2026-09-13", "unavailable");
+
+    // Round 6: fewer than 5 confirmed, so the player alert is visible.
+    ["Alex", "Sam", "Jess", "Casey"].forEach(player => {
+      setDemoStatus(player, "2026-09-20", "available");
+    });
+    setDemoStatus("Taylor", "2026-09-20", "unsure");
+    setDemoStatus("Morgan", "2026-09-20", "unavailable");
+
+    // Round 7: already covered.
+    ["Alex", "Sam", "Jess", "Casey", "Taylor", "Morgan"].forEach(player => {
+      setDemoStatus(player, "2026-09-27", "available");
+    });
+    setDemoStatus("Riley", "2026-09-27", "unsure");
+
+    // Remaining rounds have a mix of responses so the page looks lived-in.
+    ["Alex", "Jess", "Casey", "Taylor", "Morgan"].forEach(player => {
+      setDemoStatus(player, "2026-10-04", "available");
+    });
+    setDemoStatus("Sam", "2026-10-04", "unsure");
+    setDemoStatus("Riley", "2026-10-04", "unavailable");
+
+    ["Alex", "Sam", "Jess", "Casey", "Taylor", "Morgan"].forEach(player => {
+      setDemoStatus(player, "2026-10-11", "available");
+    });
+
+    ["Alex", "Sam", "Jess", "Casey"].forEach(player => {
+      setDemoStatus(player, "2026-10-18", "available");
+    });
+    setDemoStatus("Taylor", "2026-10-18", "unsure");
+    setDemoStatus("Morgan", "2026-10-18", "unsure");
+
+    ["Alex", "Sam", "Jess", "Casey", "Taylor"].forEach(player => {
+      setDemoStatus(player, "2026-10-25", "available");
+    });
+    setDemoStatus("Morgan", "2026-10-25", "unavailable");
+
+    return demo;
+  }
+
+  let demoState = createDemoState();
 
   let currentPlayer = null;
   let currentRole = null;
@@ -397,6 +469,8 @@ button:disabled.selected {
   const nextGameSummaryEl = document.getElementById("nextGameSummary");
   const signedInNameEl = document.getElementById("signedInName");
   const accountRoleEl = document.getElementById("accountRole");
+  const prototypeNoticeEl = document.getElementById("prototypeNotice");
+  const demoNoticeEl = document.getElementById("demoNotice");
   const logoutButton = document.getElementById("logout");
 
 
@@ -450,15 +524,23 @@ button:disabled.selected {
   // Helpers
   // ------------------------------------------------------------
 
-  function getCountsForGame(dateKey) {
+  function getActivePlayers() {
+    return currentRole === "demo" ? demoPlayers : players;
+  }
+
+  function getActiveState() {
+    return currentRole === "demo" ? demoState : state;
+  }
+
+  function getCountsForGame(dateKey, playerList = getActivePlayers(), stateSource = getActiveState()) {
     const counts = {
       available: 0,
       unsure: 0,
       unavailable: 0
     };
 
-    players.forEach(player => {
-      const status = state[player][dateKey]?.status;
+    playerList.forEach(player => {
+      const status = stateSource[player][dateKey]?.status;
 
       if (status) {
         counts[status]++;
@@ -519,7 +601,11 @@ button:disabled.selected {
       return "";
     }
 
-    const updatedDate = new Date(updatedAt + "Z");
+    const timestamp = updatedAt.endsWith("Z")
+      ? updatedAt
+      : updatedAt + "Z";
+
+    const updatedDate = new Date(timestamp);
 
     return updatedDate.toLocaleString("en-AU", {
       day: "numeric",
@@ -548,13 +634,20 @@ button:disabled.selected {
     loginMessage.textContent = "Loading availability...";
 
     try {
-      await loadAvailability();
-
       currentPlayer = account.name;
       currentRole = account.role;
 
+      if (currentRole === "demo") {
+        demoState = createDemoState();
+      } else {
+        await loadAvailability();
+      }
+
       signedInNameEl.textContent = currentPlayer;
       accountRoleEl.textContent = getRoleLabel(currentRole);
+
+      prototypeNoticeEl.classList.toggle("hidden", currentRole === "demo");
+      demoNoticeEl.classList.toggle("hidden", currentRole !== "demo");
 
       loginMessage.textContent = "";
       loginCard.classList.add("hidden");
@@ -679,7 +772,8 @@ button:disabled.selected {
     const name = document.createElement("div");
     name.className = "player-name";
 
-    const playerEntry = state[player][dateKey];
+    const activeState = getActiveState();
+    const playerEntry = activeState[player][dateKey];
     const updatedTime = formatUpdatedTime(playerEntry?.updated_at);
 
     const updatedText = updatedTime
@@ -713,7 +807,9 @@ button:disabled.selected {
     button.textContent = `${status.icon} ${status.label}`;
     button.classList.add(status.key);
 
-    if (state[player][dateKey]?.status === status.key) {
+    const activeState = getActiveState();
+
+    if (activeState[player][dateKey]?.status === status.key) {
       button.classList.add("selected");
     }
 
@@ -725,16 +821,23 @@ button:disabled.selected {
       button.disabled = true;
 
       try {
-        await saveAvailability(
-          currentPlayer,
-          dateKey,
-          status.key
-        );
+        if (currentRole === "demo") {
+          demoState[currentPlayer][dateKey] = {
+            status: status.key,
+            updated_at: new Date().toISOString()
+          };
+        } else {
+          await saveAvailability(
+            currentPlayer,
+            dateKey,
+            status.key
+          );
 
-        state[currentPlayer][dateKey] = {
-          status: status.key,
-          updated_at: new Date().toISOString()
-        };
+          state[currentPlayer][dateKey] = {
+            status: status.key,
+            updated_at: new Date().toISOString()
+          };
+        }
 
         render();
       } catch (error) {
@@ -775,9 +878,11 @@ button:disabled.selected {
 
     game.appendChild(createGameAlert(counts));
 
+    const activePlayers = getActivePlayers();
+
     const displayPlayers = [
       currentPlayer,
-      ...players.filter(player => player !== currentPlayer)
+      ...activePlayers.filter(player => player !== currentPlayer)
     ];
 
     displayPlayers.forEach(player => {
@@ -810,7 +915,9 @@ button:disabled.selected {
     games.forEach(gameData => {
       const dateKey = gameData[0];
 
-      if (state[currentPlayer][dateKey]?.status) {
+      const activeState = getActiveState();
+
+      if (activeState[currentPlayer][dateKey]?.status) {
         answered++;
       }
 
