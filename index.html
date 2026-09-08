@@ -271,7 +271,7 @@ button:disabled.selected {
         <button id="logout" type="button">Save & Log out</button>
       </div>
 
-      <p class="muted">
+      <p id="editingHelp" class="muted">
         You can change only your own availability. Other players are read-only.
       </p>
 
@@ -469,6 +469,7 @@ button:disabled.selected {
   const nextGameSummaryEl = document.getElementById("nextGameSummary");
   const signedInNameEl = document.getElementById("signedInName");
   const accountRoleEl = document.getElementById("accountRole");
+  const editingHelpEl = document.getElementById("editingHelp");
   const prototypeNoticeEl = document.getElementById("prototypeNotice");
   const demoNoticeEl = document.getElementById("demoNotice");
   const logoutButton = document.getElementById("logout");
@@ -596,6 +597,18 @@ button:disabled.selected {
     return "⚽ Player";
   }
 
+  function getEditingHelp(role) {
+    if (role === "admin") {
+      return "👑 Admin editing is enabled. You can update availability for any player.";
+    }
+
+    if (role === "demo") {
+      return "Demo Player can change only their own fake availability. Nothing here affects the real team.";
+    }
+
+    return "You can change only your own availability. Other players are read-only.";
+  }
+
   function formatUpdatedTime(updatedAt) {
     if (!updatedAt) {
       return "";
@@ -645,6 +658,7 @@ button:disabled.selected {
 
       signedInNameEl.textContent = currentPlayer;
       accountRoleEl.textContent = getRoleLabel(currentRole);
+      editingHelpEl.textContent = getEditingHelp(currentRole);
 
       prototypeNoticeEl.classList.toggle("hidden", currentRole === "demo");
       demoNoticeEl.classList.toggle("hidden", currentRole !== "demo");
@@ -803,7 +817,11 @@ button:disabled.selected {
     const button = document.createElement("button");
 
     button.type = "button";
-    button.disabled = player !== currentPlayer;
+    const canEditPlayer =
+      player === currentPlayer ||
+      (currentRole === "admin" && players.includes(player));
+
+    button.disabled = !canEditPlayer;
     button.textContent = `${status.icon} ${status.label}`;
     button.classList.add(status.key);
 
@@ -814,7 +832,11 @@ button:disabled.selected {
     }
 
     button.addEventListener("click", async () => {
-      if (player !== currentPlayer) {
+      const canEditPlayer =
+        player === currentPlayer ||
+        (currentRole === "admin" && players.includes(player));
+
+      if (!canEditPlayer) {
         return;
       }
 
@@ -828,12 +850,12 @@ button:disabled.selected {
           };
         } else {
           await saveAvailability(
-            currentPlayer,
+            player,
             dateKey,
             status.key
           );
 
-          state[currentPlayer][dateKey] = {
+          state[player][dateKey] = {
             status: status.key,
             updated_at: new Date().toISOString()
           };
