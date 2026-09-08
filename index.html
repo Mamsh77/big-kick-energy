@@ -76,6 +76,7 @@ button:disabled.selected{
       <div>
         <div class="subtitle">Signed in as</div>
         <h2 id="signedInName">Maiz</h2>
+        <div id="accountRole" class="subtitle"></div>
       </div>
      <button id="logout" type="button">Save & Log out</button>
     </div>
@@ -90,16 +91,52 @@ button:disabled.selected{
 
 <script>
 (() => {
-  const playerEmails = {
-    "mary.surawski@gmail.com": "Maiz",
-    "vivianne0626@yahoo.com": "Viv",
-  "Diannecarrie@hotmail.com": "Di",
-  "jo.harris816@gmail.com": "Jo",
-  "balljulieann5@gmail.com": "Julie",
-  "kjwallis@gmail.com": "KJ",
-  "hellokelldarling@gmail.com": "Kell",
-  "cathyball22@gmail.com": "Cath"
-  };
+const accounts = {
+  "mary.surawski@gmail.com": {
+    name: "Maiz",
+    role: "admin"
+  },
+
+  "vivianne0626@yahoo.com": {
+    name: "Viv",
+    role: "player"
+  },
+
+  "diannecarrie@hotmail.com": {
+    name: "Di",
+    role: "player"
+  },
+
+  "jo.harris816@gmail.com": {
+    name: "Jo",
+    role: "player"
+  },
+
+  "balljulieann5@gmail.com": {
+    name: "Julie",
+    role: "player"
+  },
+
+  "kjwallis@gmail.com": {
+    name: "KJ",
+    role: "player"
+  },
+
+  "hellokelldarling@gmail.com": {
+    name: "Kell",
+    role: "player"
+  },
+
+  "cathyball22@gmail.com": {
+    name: "Cath",
+    role: "player"
+  },
+
+  "demo@bigkickenergy.com": {
+    name: "Demo Player",
+    role: "demo"
+  }
+};
 
   const players = ["Viv","Di","Jo","Julie","KJ","Kell","Cath","Maiz"];
 
@@ -121,8 +158,10 @@ const games = [
 
   const state = {};
   players.forEach(player => state[player] = {});
-
+  state["Demo Player"] = {};
+  
   let currentPlayer = null;
+  let currentRole = null;
 
   const loginForm = document.getElementById("loginForm");
   const emailInput = document.getElementById("email");
@@ -237,9 +276,9 @@ function renderNextGameSummary() {
     e.preventDefault();
 
     const email = emailInput.value.trim().toLowerCase();
-    const player = playerEmails[email];
+    const account = accounts[email];
 
-    if (!player) {
+    if (!account) {
       loginMessage.textContent = "That email is not linked to a player yet.";
       return;
     }
@@ -249,12 +288,22 @@ function renderNextGameSummary() {
     try {
       await loadAvailability();
 
-      currentPlayer = player;
+     currentPlayer = account.name;
+      currentRole = account.role;
       loginMessage.textContent = "";
       loginCard.classList.add("hidden");
       app.classList.remove("hidden");
 
       document.getElementById("signedInName").textContent = currentPlayer;
+      const roleEl = document.getElementById("accountRole");
+
+if (currentRole === "admin") {
+  roleEl.textContent = "👑 Team Admin";
+} else if (currentRole === "demo") {
+  roleEl.textContent = "🧪 Demo Mode";
+} else {
+  roleEl.textContent = "⚽ Player";
+}
 
       render();
     } catch (error) {
