@@ -4,164 +4,388 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Big Kick Energy😫😈✨ Availability</title>
+
 <style>
-:root{--bg:#f7f7fb;--card:#fff;--text:#222;--muted:#686875;--border:#d9d9e3;--accent:#6b4bb8;--accentLight:#eee8fb;--warning:#fff4cf}
-*{box-sizing:border-box} body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
-.container{max-width:900px;margin:auto;padding:18px}.card,.game{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px;margin-bottom:14px}
-h1,h2,h3,p{margin-top:0}.subtitle,.muted,.counts{color:var(--muted);font-size:14px}
-.login-row,.game-top,.player-row,.buttons{display:flex;flex-wrap:wrap;gap:10px}.login-row{align-items:end}.game-top,.player-row{justify-content:space-between;align-items:center}
-label{display:block;font-size:14px;font-weight:bold;margin-bottom:6px}input{min-width:260px;padding:12px;border:1px solid var(--border);border-radius:12px;font-size:16px}
-button{min-height:44px;border:1px solid var(--border);background:#fff;border-radius:12px;padding:10px 13px;font-size:14px;cursor:pointer}
-button.primary{background:var(--accent);color:#fff;border-color:var(--accent)}button.selected{background:var(--accentLight);border-color:var(--accent);font-weight:bold}
-button:disabled{opacity:.38;cursor:not-allowed}.player-row{border:1px solid var(--border);border-radius:13px;padding:11px;margin-top:9px}.player-row.you{background:var(--accentLight);border-color:var(--accent)}
-.player-name{font-weight:bold}.message{margin-top:12px;font-size:14px}.warning{background:var(--warning);border-radius:12px;padding:10px;margin-top:10px;font-size:14px}
-.hidden{display:none}.summary{display:inline-block;border:1px solid var(--border);border-radius:999px;padding:8px 12px;margin-bottom:12px;color:var(--muted);font-size:14px}
-@media(max-width:600px){.container{padding:10px}.login-row>div{width:100%}input{width:100%;min-width:0}.buttons{width:100%}.buttons button{flex:1 1 100%}.player-row{align-items:stretch}}
-/* Make selected availability stand out */
-button.selected.available{
-  background:#20b943;
-  border-color:#159c34;
-  color:white;
-  font-weight:bold;
+:root {
+  --bg: #f7f7fb;
+  --card: #fff;
+  --text: #222;
+  --muted: #686875;
+  --border: #d9d9e3;
+  --accent: #6b4bb8;
+  --accentLight: #eee8fb;
+  --warning: #fff4cf;
 }
 
-button.selected.unsure{
-  background:#fff1b8;
-  border-color:#e5ad16;
-  color:#7a5600;
-  font-weight:bold;
+* {
+  box-sizing: border-box;
 }
 
-button.selected.unavailable{
-  background:#ffe4e7;
-  border-color:#e5394f;
-  color:#b6162c;
-  font-weight:bold;
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.container {
+  max-width: 900px;
+  margin: auto;
+  padding: 18px;
+}
+
+.card,
+.game {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 18px;
+  margin-bottom: 14px;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
+
+.subtitle,
+.muted,
+.counts {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.login-row,
+.game-top,
+.player-row,
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.login-row {
+  align-items: end;
+}
+
+.game-top,
+.player-row {
+  justify-content: space-between;
+  align-items: center;
+}
+
+label {
+  display: block;
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+input {
+  min-width: 260px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-size: 16px;
+}
+
+button {
+  min-height: 44px;
+  border: 1px solid var(--border);
+  background: #fff;
+  border-radius: 12px;
+  padding: 10px 13px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+button.primary {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+button.selected {
+  background: var(--accentLight);
+  border-color: var(--accent);
+  font-weight: bold;
+}
+
+button:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+.player-row {
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  padding: 11px;
+  margin-top: 9px;
+}
+
+.player-row.you {
+  background: var(--accentLight);
+  border-color: var(--accent);
+}
+
+.player-name {
+  font-weight: bold;
+}
+
+.message {
+  margin-top: 12px;
+  font-size: 14px;
+}
+
+.warning {
+  background: var(--warning);
+  border-radius: 12px;
+  padding: 10px;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.hidden {
+  display: none;
+}
+
+.summary {
+  display: inline-block;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 8px 12px;
+  margin-bottom: 12px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+/* Selected availability */
+button.selected.available {
+  background: #20b943;
+  border-color: #159c34;
+  color: white;
+  font-weight: bold;
+}
+
+button.selected.unsure {
+  background: #fff1b8;
+  border-color: #e5ad16;
+  color: #7a5600;
+  font-weight: bold;
+}
+
+button.selected.unavailable {
+  background: #ffe4e7;
+  border-color: #e5394f;
+  color: #b6162c;
+  font-weight: bold;
 }
 
 /* Keep other players' selections visible */
-button:disabled:not(.selected){
-  opacity:.32;
+button:disabled:not(.selected) {
+  opacity: 0.32;
 }
 
-button:disabled.selected{
-  opacity:.85;
+button:disabled.selected {
+  opacity: 0.85;
+}
+
+@media (max-width: 600px) {
+  .container {
+    padding: 10px;
+  }
+
+  .login-row > div {
+    width: 100%;
+  }
+
+  input {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .buttons {
+    width: 100%;
+  }
+
+  .buttons button {
+    flex: 1 1 100%;
+  }
+
+  .player-row {
+    align-items: stretch;
+  }
 }
 </style>
 </head>
+
 <body>
 <main class="container">
-<section class="card" id="loginCard">
-  <div class="subtitle">Indoor soccer • 5-a-side • 8 weeks</div>
-  <h1>Big Kick Energy😫😈✨ Availability</h1>
-  <div id="nextGameSummary" class="warning">
-  Loading current availability...
-</div>
-  <p class="muted">Test login: enter the email address linked to your player name.</p>
-  <form id="loginForm">
-    <div class="login-row">
-      <div>
-        <label for="email">Email address</label>
-        <input id="email" type="email" autocomplete="email" placeholder="name@example.com" required>
-      </div>
-      <button class="primary" type="submit">Continue</button>
-    </div>
-  </form>
-  <div id="loginMessage" class="message" aria-live="polite"></div>
-</section>
 
-<section id="app" class="hidden">
-  <section class="card">
-    <div class="game-top">
-      <div>
-        <div class="subtitle">Signed in as</div>
-        <h2 id="signedInName">Maiz</h2>
-        <div id="accountRole" class="subtitle"></div>
-      </div>
-     <button id="logout" type="button">Save & Log out</button>
+  <!-- Login -->
+  <section class="card" id="loginCard">
+    <div class="subtitle">Indoor soccer • 5-a-side • 8 weeks</div>
+    <h1>Big Kick Energy😫😈✨ Availability</h1>
+
+    <div id="nextGameSummary" class="warning">
+      Loading current availability...
     </div>
-    <p class="muted">You can change only your own availability. Other players are read-only.</p>
-    <div class="warning"><strong>Prototype:</strong> this currently checks the email address in the browser only. Availability is shared between devices, but secure authentication has not been added yet.</div>
+
+    <p class="muted">
+      Test login: enter the email address linked to your player name.
+    </p>
+
+    <form id="loginForm">
+      <div class="login-row">
+        <div>
+          <label for="email">Email address</label>
+          <input
+            id="email"
+            type="email"
+            autocomplete="email"
+            placeholder="name@example.com"
+            required
+          >
+        </div>
+
+        <button class="primary" type="submit">Continue</button>
+      </div>
+    </form>
+
+    <div id="loginMessage" class="message" aria-live="polite"></div>
   </section>
 
-  <div id="summary" class="summary"></div>
-  <div id="games"></div>
-</section>
+  <!-- Main app -->
+  <section id="app" class="hidden">
+
+    <section class="card">
+      <div class="game-top">
+        <div>
+          <div class="subtitle">Signed in as</div>
+          <h2 id="signedInName">Maiz</h2>
+          <div id="accountRole" class="subtitle"></div>
+        </div>
+
+        <button id="logout" type="button">Save & Log out</button>
+      </div>
+
+      <p class="muted">
+        You can change only your own availability. Other players are read-only.
+      </p>
+
+      <div class="warning">
+        <strong>Prototype:</strong>
+        this currently checks the email address in the browser only.
+        Availability is shared between devices, but secure authentication has not been added yet.
+      </div>
+    </section>
+
+    <div id="summary" class="summary"></div>
+    <div id="games"></div>
+
+  </section>
+
 </main>
 
 <script>
 (() => {
-const accounts = {
-  "mary.surawski@gmail.com": {
-    name: "Maiz",
-    role: "admin"
-  },
 
-  "vivianne0626@yahoo.com": {
-    name: "Viv",
-    role: "player"
-  },
+  // ------------------------------------------------------------
+  // Configuration
+  // ------------------------------------------------------------
 
-  "diannecarrie@hotmail.com": {
-    name: "Di",
-    role: "player"
-  },
+  const accounts = {
+    "mary.surawski@gmail.com": {
+      name: "Maiz",
+      role: "admin"
+    },
+    "vivianne0626@yahoo.com": {
+      name: "Viv",
+      role: "player"
+    },
+    "diannecarrie@hotmail.com": {
+      name: "Di",
+      role: "player"
+    },
+    "jo.harris816@gmail.com": {
+      name: "Jo",
+      role: "player"
+    },
+    "balljulieann5@gmail.com": {
+      name: "Julie",
+      role: "player"
+    },
+    "kjwallis@gmail.com": {
+      name: "KJ",
+      role: "player"
+    },
+    "hellokelldarling@gmail.com": {
+      name: "Kell",
+      role: "player"
+    },
+    "cathyball22@gmail.com": {
+      name: "Cath",
+      role: "player"
+    },
+    "demo@bigkickenergy.com": {
+      name: "Demo Player",
+      role: "demo"
+    }
+  };
 
-  "jo.harris816@gmail.com": {
-    name: "Jo",
-    role: "player"
-  },
-
-  "balljulieann5@gmail.com": {
-    name: "Julie",
-    role: "player"
-  },
-
-  "kjwallis@gmail.com": {
-    name: "KJ",
-    role: "player"
-  },
-
-  "hellokelldarling@gmail.com": {
-    name: "Kell",
-    role: "player"
-  },
-
-  "cathyball22@gmail.com": {
-    name: "Cath",
-    role: "player"
-  },
-
-  "demo@bigkickenergy.com": {
-    name: "Demo Player",
-    role: "demo"
-  }
-};
-
-  const players = ["Viv","Di","Jo","Julie","KJ","Kell","Cath","Maiz"];
-
-const games = [
-  ["2026-09-13", "Sunday 13 September", "Pitch Please Ladies", "4:10pm", "Court 3", "Round 5"],
-  ["2026-09-20", "Sunday 20 September", "Bruises Utd", "4:10pm", "Court 3", "Round 6"],
-  ["2026-09-27", "Sunday 27 September", "Boots & Banter", "2:50pm", "Court 3", "Round 7"],
-  ["2026-10-04", "Sunday 4 October", "You Did It", "4:10pm", "Court 3", "Round 8"],
-  ["2026-10-11", "Sunday 11 October", "Not Fast Just Furious", "1:30pm", "Court 5", "Round 9"],
-  ["2026-10-18", "Sunday 18 October", "Brissy Blitz", "4:10pm", "Court 3", "Round 10"],
-  ["2026-10-25", "Sunday 25 October", "Sexy Pandas", "4:10pm", "Court 3", "Round 11"]
-];
-
-  const statuses = [
-    {key:"available",icon:"✅",label:"Available"},
-    {key:"unsure",icon:"❓",label:"Unsure"},
-    {key:"unavailable",icon:"❌",label:"Unavailable"}
+  const players = [
+    "Viv",
+    "Di",
+    "Jo",
+    "Julie",
+    "KJ",
+    "Kell",
+    "Cath",
+    "Maiz"
   ];
 
+  const games = [
+    ["2026-09-13", "Sunday 13 September", "Pitch Please Ladies", "4:10pm", "Court 3", "Round 5"],
+    ["2026-09-20", "Sunday 20 September", "Bruises Utd", "4:10pm", "Court 3", "Round 6"],
+    ["2026-09-27", "Sunday 27 September", "Boots & Banter", "2:50pm", "Court 3", "Round 7"],
+    ["2026-10-04", "Sunday 4 October", "You Did It", "4:10pm", "Court 3", "Round 8"],
+    ["2026-10-11", "Sunday 11 October", "Not Fast Just Furious", "1:30pm", "Court 5", "Round 9"],
+    ["2026-10-18", "Sunday 18 October", "Brissy Blitz", "4:10pm", "Court 3", "Round 10"],
+    ["2026-10-25", "Sunday 25 October", "Sexy Pandas", "4:10pm", "Court 3", "Round 11"]
+  ];
+
+  const statuses = [
+    { key: "available", icon: "✅", label: "Available" },
+    { key: "unsure", icon: "❓", label: "Unsure" },
+    { key: "unavailable", icon: "❌", label: "Unavailable" }
+  ];
+
+  const playersOnField = 5;
+  const desiredPlayers = 6; // 5 playing + 1 sub
+
+
+  // ------------------------------------------------------------
+  // App state
+  // ------------------------------------------------------------
+
   const state = {};
-  players.forEach(player => state[player] = {});
+
+  players.forEach(player => {
+    state[player] = {};
+  });
+
+  // Temporary until Demo Mode gets its own separate local state.
   state["Demo Player"] = {};
-  
+
   let currentPlayer = null;
   let currentRole = null;
+
+
+  // ------------------------------------------------------------
+  // DOM references
+  // ------------------------------------------------------------
 
   const loginForm = document.getElementById("loginForm");
   const emailInput = document.getElementById("email");
@@ -171,6 +395,14 @@ const games = [
   const gamesEl = document.getElementById("games");
   const summary = document.getElementById("summary");
   const nextGameSummaryEl = document.getElementById("nextGameSummary");
+  const signedInNameEl = document.getElementById("signedInName");
+  const accountRoleEl = document.getElementById("accountRole");
+  const logoutButton = document.getElementById("logout");
+
+
+  // ------------------------------------------------------------
+  // API
+  // ------------------------------------------------------------
 
   async function loadAvailability() {
     const response = await fetch("/api/availability");
@@ -182,12 +414,14 @@ const games = [
     const rows = await response.json();
 
     rows.forEach(row => {
-      if (state[row.player]) {
-   state[row.player][row.game_date] = {
-      status: row.status,
-      updated_at: row.updated_at
-    };
-  }
+      if (!state[row.player]) {
+        return;
+      }
+
+      state[row.player][row.game_date] = {
+        status: row.status,
+        updated_at: row.updated_at
+      };
     });
   }
 
@@ -198,9 +432,9 @@ const games = [
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        player: player,
+        player,
         game_date: gameDate,
-        status: status
+        status
       })
     });
 
@@ -210,70 +444,98 @@ const games = [
 
     return response.json();
   }
-function renderNextGameSummary() {
-  const now = new Date();
 
-  const nextGame = games.find(([dateKey]) => {
-    const gameDate = new Date(`${dateKey}T23:59:59`);
-    return gameDate >= now;
-  });
 
-  if (!nextGame) {
-    nextGameSummaryEl.innerHTML = `
-      ⚽ <strong>No upcoming games scheduled.</strong>
-    `;
-    return;
+  // ------------------------------------------------------------
+  // Helpers
+  // ------------------------------------------------------------
+
+  function getCountsForGame(dateKey) {
+    const counts = {
+      available: 0,
+      unsure: 0,
+      unavailable: 0
+    };
+
+    players.forEach(player => {
+      const status = state[player][dateKey]?.status;
+
+      if (status) {
+        counts[status]++;
+      }
+    });
+
+    return counts;
   }
 
-  const [dateKey, dateLabel] = nextGame;
+  function getTeamMessage(counts) {
+    const playersNeeded = desiredPlayers - counts.available;
 
-  const counts = {
-    available: 0,
-    unsure: 0,
-    unavailable: 0
-  };
-
-  players.forEach(player => {
-    const status = state[player][dateKey]?.status;
-
-    if (status) {
-      counts[status]++;
+    if (counts.available < playersOnField) {
+      return {
+        type: "players",
+        html: `
+          🚨 <strong>ALERT: YOU NEED PLAYERS!</strong><br>
+          ${counts.available} confirmed.
+          You need ${playersNeeded} more ${playersNeeded === 1 ? "player" : "players"}
+          to have 5 players, plus at least 1 sub.
+        `
+      };
     }
-  });
 
-  const desiredPlayers = 6;
-  const playersNeeded = desiredPlayers - counts.available;
+    if (counts.available === playersOnField) {
+      return {
+        type: "sub",
+        html: `
+          ⚠️ <strong>YOU NEED A SUB!</strong><br>
+          You have 5 players confirmed, but no subs yet.
+        `
+      };
+    }
 
-  let teamMessage = "";
-
-  if (counts.available < 5) {
-    teamMessage = `
-      🚨 <strong>Need ${playersNeeded} more
-      ${playersNeeded === 1 ? "player" : "players"}.</strong>
-    `;
-  } else if (counts.available === 5) {
-    teamMessage = `
-      ⚠️ <strong>Team available, but you still need at least 1 sub.</strong>
-    `;
-  } else {
-    teamMessage = `
-      ✅ <strong>Team covered!</strong>
-    `;
+    return {
+      type: "covered",
+      html: `
+        ✅ <strong>Team covered!</strong>
+        ${counts.available} players confirmed, including at least 1 sub.
+      `
+    };
   }
 
-  nextGameSummaryEl.innerHTML = `
-    <strong>⚽ Next game: ${dateLabel}</strong><br><br>
+  function getRoleLabel(role) {
+    if (role === "admin") {
+      return "👑 Team Admin";
+    }
 
-    ✅ ${counts.available} available &nbsp;
-    ❓ ${counts.unsure} unsure &nbsp;
-    ❌ ${counts.unavailable} unavailable
+    if (role === "demo") {
+      return "🧪 Demo Mode";
+    }
 
-    <br><br>
-    ${teamMessage}
-  `;
-}
-  loginForm.addEventListener("submit", async e => {
-    e.preventDefault();
+    return "⚽ Player";
+  }
+
+  function formatUpdatedTime(updatedAt) {
+    if (!updatedAt) {
+      return "";
+    }
+
+    const updatedDate = new Date(updatedAt + "Z");
+
+    return updatedDate.toLocaleString("en-AU", {
+      day: "numeric",
+      month: "short",
+      hour: "numeric",
+      minute: "2-digit"
+    });
+  }
+
+
+  // ------------------------------------------------------------
+  // Login / logout
+  // ------------------------------------------------------------
+
+  async function handleLogin(event) {
+    event.preventDefault();
 
     const email = emailInput.value.trim().toLowerCase();
     const account = accounts[email];
@@ -288,162 +550,164 @@ function renderNextGameSummary() {
     try {
       await loadAvailability();
 
-     currentPlayer = account.name;
+      currentPlayer = account.name;
       currentRole = account.role;
+
+      signedInNameEl.textContent = currentPlayer;
+      accountRoleEl.textContent = getRoleLabel(currentRole);
+
       loginMessage.textContent = "";
       loginCard.classList.add("hidden");
       app.classList.remove("hidden");
-
-      document.getElementById("signedInName").textContent = currentPlayer;
-      const roleEl = document.getElementById("accountRole");
-
-if (currentRole === "admin") {
-  roleEl.textContent = "👑 Team Admin";
-} else if (currentRole === "demo") {
-  roleEl.textContent = "🧪 Demo Mode";
-} else {
-  roleEl.textContent = "⚽ Player";
-}
 
       render();
     } catch (error) {
       console.error(error);
       loginMessage.textContent = "Could not load availability. Please try again.";
     }
-  });
+  }
 
-  document.getElementById("logout").addEventListener("click", () => {
+  function logout() {
     currentPlayer = null;
+    currentRole = null;
+
     emailInput.value = "";
     app.classList.add("hidden");
     loginCard.classList.remove("hidden");
     loginMessage.textContent = "";
+
     emailInput.focus();
-  });
+  }
 
-  function render() {
-    gamesEl.innerHTML = "";
-    let answered = 0;
 
-    games.forEach(([dateKey, dateLabel, opponent, time, court, round], index) => {
-      if (state[currentPlayer][dateKey]?.status) {
-        answered++;
-      }
+  // ------------------------------------------------------------
+  // Rendering
+  // ------------------------------------------------------------
 
-      const counts = {
-        available: 0,
-        unsure: 0,
-        unavailable: 0
-      };
+  function renderNextGameSummary() {
+    const now = new Date();
 
-      players.forEach(player => {
-        const value = state[player][dateKey]?.status;
+    const nextGame = games.find(([dateKey]) => {
+      const gameDate = new Date(`${dateKey}T23:59:59`);
+      return gameDate >= now;
+    });
 
-        if (value) {
-          counts[value]++;
-        }
-      });
+    if (!nextGame) {
+      nextGameSummaryEl.innerHTML = `
+        ⚽ <strong>No upcoming games scheduled.</strong>
+      `;
+      return;
+    }
 
-      const game = document.createElement("section");
-      game.className = "game";
+    const [dateKey, dateLabel] = nextGame;
+    const counts = getCountsForGame(dateKey);
 
-      const top = document.createElement("div");
-      top.className = "game-top";
+    let teamMessage = "";
 
-     top.innerHTML = `
-  <div>
-    <div class="subtitle">${round}</div>
-    <h3 style="margin-bottom:6px;">⚽ Big Kick Energy vs ${opponent}</h3>
-    <div class="muted">
-      📅 ${dateLabel} &nbsp;•&nbsp;
-      🕓 ${time} &nbsp;•&nbsp;
-      📍 ${court}
-    </div>
-  </div>
+    if (counts.available < playersOnField) {
+      const playersNeeded = desiredPlayers - counts.available;
 
-  <div class="counts">
-    ${counts.available} confirmed •
-    ${counts.unsure} unsure •
-    ${counts.unavailable} unavailable
-  </div>
-`;
+      teamMessage = `
+        🚨 <strong>Need ${playersNeeded} more
+        ${playersNeeded === 1 ? "player" : "players"}.</strong>
+      `;
+    } else if (counts.available === playersOnField) {
+      teamMessage = `
+        ⚠️ <strong>Team available, but you still need at least 1 sub.</strong>
+      `;
+    } else {
+      teamMessage = `
+        ✅ <strong>Team covered!</strong>
+      `;
+    }
 
-      game.appendChild(top);
-      
-const playersOnField = 5;
-const desiredPlayers = 6; // 5 playing + 1 sub
-const playersNeeded = desiredPlayers - counts.available;
+    nextGameSummaryEl.innerHTML = `
+      <strong>⚽ Next game: ${dateLabel}</strong><br><br>
 
-const gameAlert = document.createElement("div");
+      ✅ ${counts.available} available &nbsp;
+      ❓ ${counts.unsure} unsure &nbsp;
+      ❌ ${counts.unavailable} unavailable
 
-if (playersNeeded > 0) {
-  gameAlert.className = "warning";
-
-  if (counts.available < playersOnField) {
-    gameAlert.innerHTML = `
-      🚨 <strong>ALERT: YOU NEED PLAYERS!</strong><br>
-      ${counts.available} confirmed.
-      You need ${playersNeeded} more ${playersNeeded === 1 ? "player" : "players"}
-      to have 5 players, plus at least 1 sub.
-    `;
-  } else {
-    gameAlert.innerHTML = `
-      ⚠️ <strong>YOU NEED A SUB!</strong><br>
-      You have 5 players confirmed, but no subs yet.
+      <br><br>
+      ${teamMessage}
     `;
   }
-} else {
-  gameAlert.className = "message";
-  gameAlert.innerHTML = `
-    ✅ <strong>Team covered!</strong>
-    ${counts.available} players confirmed, including at least 1 sub.
-  `;
-}
 
-game.appendChild(gameAlert);
-      
- const displayPlayers = [
-  currentPlayer,
-  ...players.filter(player => player !== currentPlayer)
-];
+  function createGameHeader(dateLabel, opponent, time, court, round, counts) {
+    const top = document.createElement("div");
+    top.className = "game-top";
 
-displayPlayers.forEach(player => {
-  const row = document.createElement("div");
-  row.className =
-    "player-row" + (player === currentPlayer ? " you" : "");
+    top.innerHTML = `
+      <div>
+        <div class="subtitle">${round}</div>
+        <h3 style="margin-bottom:6px;">⚽ Big Kick Energy vs ${opponent}</h3>
 
-const name = document.createElement("div");
-name.className = "player-name";
+        <div class="muted">
+          📅 ${dateLabel} &nbsp;•&nbsp;
+          🕓 ${time} &nbsp;•&nbsp;
+          📍 ${court}
+        </div>
+      </div>
 
-const playerEntry = state[player][dateKey];
+      <div class="counts">
+        ${counts.available} confirmed •
+        ${counts.unsure} unsure •
+        ${counts.unavailable} unavailable
+      </div>
+    `;
 
-let updatedText = "";
+    return top;
+  }
 
-if (playerEntry?.updated_at) {
-  const updatedDate = new Date(playerEntry.updated_at + "Z");
+  function createGameAlert(counts) {
+    const alert = document.createElement("div");
+    const teamMessage = getTeamMessage(counts);
 
-  updatedText = `
-    <div class="muted">
-      Last updated: ${updatedDate.toLocaleString("en-AU", {
-        day: "numeric",
-        month: "short",
-        hour: "numeric",
-        minute: "2-digit"
-      })}
-    </div>
-  `;
-}
+    alert.className = teamMessage.type === "covered"
+      ? "message"
+      : "warning";
 
-name.innerHTML = `
-  ${player === currentPlayer ? player + " • you" : player}
-  ${updatedText}
-`;
+    alert.innerHTML = teamMessage.html;
 
-  const buttons = document.createElement("div");
-  buttons.className = "buttons";
+    return alert;
+  }
 
-  statuses.forEach(status => {
+  function createPlayerRow(player, dateKey) {
+    const row = document.createElement("div");
+    row.className = "player-row" + (player === currentPlayer ? " you" : "");
+
+    const name = document.createElement("div");
+    name.className = "player-name";
+
+    const playerEntry = state[player][dateKey];
+    const updatedTime = formatUpdatedTime(playerEntry?.updated_at);
+
+    const updatedText = updatedTime
+      ? `<div class="muted">Last updated: ${updatedTime}</div>`
+      : "";
+
+    name.innerHTML = `
+      ${player === currentPlayer ? player + " • you" : player}
+      ${updatedText}
+    `;
+
+    const buttons = document.createElement("div");
+    buttons.className = "buttons";
+
+    statuses.forEach(status => {
+      buttons.appendChild(
+        createAvailabilityButton(player, dateKey, status)
+      );
+    });
+
+    row.append(name, buttons);
+
+    return row;
+  }
+
+  function createAvailabilityButton(player, dateKey, status) {
     const button = document.createElement("button");
+
     button.type = "button";
     button.disabled = player !== currentPlayer;
     button.textContent = `${status.icon} ${status.label}`;
@@ -468,9 +732,10 @@ name.innerHTML = `
         );
 
         state[currentPlayer][dateKey] = {
-  status: status.key,
-  updated_at: new Date().toISOString()
-};
+          status: status.key,
+          updated_at: new Date().toISOString()
+        };
+
         render();
       } catch (error) {
         console.error(error);
@@ -479,47 +744,106 @@ name.innerHTML = `
       }
     });
 
-    buttons.appendChild(button);
-  });
+    return button;
+  }
 
-  row.append(name, buttons);
-  game.appendChild(row);
-});
+  function createGameCard(gameData) {
+    const [
+      dateKey,
+      dateLabel,
+      opponent,
+      time,
+      court,
+      round
+    ] = gameData;
 
-      gamesEl.appendChild(game);
+    const counts = getCountsForGame(dateKey);
+
+    const game = document.createElement("section");
+    game.className = "game";
+
+    game.appendChild(
+      createGameHeader(
+        dateLabel,
+        opponent,
+        time,
+        court,
+        round,
+        counts
+      )
+    );
+
+    game.appendChild(createGameAlert(counts));
+
+    const displayPlayers = [
+      currentPlayer,
+      ...players.filter(player => player !== currentPlayer)
+    ];
+
+    displayPlayers.forEach(player => {
+      game.appendChild(
+        createPlayerRow(player, dateKey)
+      );
+    });
+
+    return game;
+  }
+
+  function createBottomLogoutButton() {
+    const button = document.createElement("button");
+
+    button.type = "button";
+    button.textContent = "Save & Log out";
+    button.className = "primary";
+    button.style.marginTop = "16px";
+
+    button.addEventListener("click", logout);
+
+    return button;
+  }
+
+  function render() {
+    gamesEl.innerHTML = "";
+
+    let answered = 0;
+
+    games.forEach(gameData => {
+      const dateKey = gameData[0];
+
+      if (state[currentPlayer][dateKey]?.status) {
+        answered++;
+      }
+
+      gamesEl.appendChild(createGameCard(gameData));
     });
 
     summary.textContent =
       `${currentPlayer}: ${answered}/${games.length} games answered`;
-    const bottomLogout = document.createElement("button");
-bottomLogout.type = "button";
-bottomLogout.textContent = "Save & Log out";
-bottomLogout.className = "primary";
-bottomLogout.style.marginTop = "16px";
 
-bottomLogout.addEventListener("click", () => {
-  currentPlayer = null;
-  emailInput.value = "";
-  app.classList.add("hidden");
-  loginCard.classList.remove("hidden");
-  loginMessage.textContent = "";
-  emailInput.focus();
-});
-
-gamesEl.appendChild(bottomLogout);
+    gamesEl.appendChild(createBottomLogoutButton());
   }
-    (async function loadLoginSummary() {
+
+
+  // ------------------------------------------------------------
+  // Events and initial load
+  // ------------------------------------------------------------
+
+  loginForm.addEventListener("submit", handleLogin);
+  logoutButton.addEventListener("click", logout);
+
+  (async function loadLoginSummary() {
     try {
       await loadAvailability();
       renderNextGameSummary();
     } catch (error) {
       console.error(error);
+
       nextGameSummaryEl.innerHTML = `
         ⚠️ Current availability could not be loaded.
       `;
     }
   })();
-  
+
 })();
 </script>
 </body>
