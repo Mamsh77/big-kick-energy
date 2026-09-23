@@ -192,6 +192,135 @@ button:disabled.selected {
   opacity: 0.85;
 }
 
+
+/* Collapsible fixtures */
+.game {
+  padding: 0;
+  overflow: hidden;
+}
+
+.game.next-game {
+  border: 2px solid var(--accent);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.game.next-game .game-toggle {
+  background: var(--accentLight);
+}
+
+.game-toggle {
+  width: 100%;
+  min-height: 0;
+  border: 0;
+  border-radius: 0;
+  background: var(--card);
+  padding: 18px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.game-toggle:hover {
+  background: #faf9fd;
+}
+
+.game-toggle:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: -3px;
+}
+
+.game-toggle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.game-toggle-main {
+  min-width: 0;
+}
+
+.game-toggle-title {
+  font-size: 17px;
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+.game-toggle-meta {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.game-toggle-counts {
+  color: var(--muted);
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+.game-chevron {
+  flex: 0 0 auto;
+  font-size: 20px;
+  transition: transform 0.2s ease;
+}
+
+.game-toggle[aria-expanded="true"] .game-chevron {
+  transform: rotate(180deg);
+}
+
+.game-content {
+  padding: 0 18px 18px;
+}
+
+.next-game-badge {
+  display: inline-block;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 999px;
+  padding: 5px 9px;
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.fixtures-heading {
+  margin: 22px 0 10px;
+}
+
+.past-games-toggle {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px 0 10px;
+  font-weight: bold;
+}
+
+.past-games {
+  display: none;
+}
+
+.past-games.open {
+  display: block;
+}
+
+.past-game {
+  opacity: 0.72;
+}
+
+@media (max-width: 600px) {
+  .game-toggle-row {
+    align-items: center;
+  }
+
+  .game-toggle {
+    padding: 15px;
+  }
+
+  .game-content {
+    padding: 0 15px 15px;
+  }
+}
+
 @media (max-width: 600px) {
   .container {
     padding: 10px;
@@ -881,7 +1010,7 @@ button:disabled.selected {
     return button;
   }
 
-  function createGameCard(gameData) {
+  function createGameCard(gameData, options = {}) {
     const [
       dateKey,
       dateLabel,
@@ -891,23 +1020,60 @@ button:disabled.selected {
       round
     ] = gameData;
 
+    const {
+      isNextGame = false,
+      isPastGame = false,
+      startOpen = false
+    } = options;
+
     const counts = getCountsForGame(dateKey);
 
     const game = document.createElement("section");
     game.className = "game";
 
-    game.appendChild(
-      createGameHeader(
-        dateLabel,
-        opponent,
-        time,
-        court,
-        round,
-        counts
-      )
-    );
+    if (isNextGame) {
+      game.classList.add("next-game");
+    }
 
-    game.appendChild(createGameAlert(counts));
+    if (isPastGame) {
+      game.classList.add("past-game");
+    }
+
+    const toggle = document.createElement("button");
+    toggle.type = "button";
+    toggle.className = "game-toggle";
+    toggle.setAttribute("aria-expanded", String(startOpen));
+
+    const contentId = `game-content-${dateKey}`;
+    toggle.setAttribute("aria-controls", contentId);
+
+    toggle.innerHTML = `
+      <div class="game-toggle-row">
+        <div class="game-toggle-main">
+          ${isNextGame ? '<span class="next-game-badge">NEXT GAME</span>' : ""}
+          <div class="game-toggle-title">
+            📅 ${dateLabel} • ${round}
+          </div>
+          <div class="game-toggle-meta">
+            ⚽ Big Kick Energy vs ${opponent}<br>
+            🕓 ${time} &nbsp;•&nbsp; 📍 ${court}
+          </div>
+          <div class="game-toggle-counts">
+            ✅ ${counts.available} confirmed &nbsp;•&nbsp;
+            ❓ ${counts.unsure} unsure &nbsp;•&nbsp;
+            ❌ ${counts.unavailable} unavailable
+          </div>
+        </div>
+        <span class="game-chevron" aria-hidden="true">⌄</span>
+      </div>
+    `;
+
+    const content = document.createElement("div");
+    content.id = contentId;
+    content.className = "game-content";
+    content.hidden = !startOpen;
+
+    content.appendChild(createGameAlert(counts));
 
     const activePlayers = getActivePlayers();
 
@@ -917,10 +1083,18 @@ button:disabled.selected {
     ];
 
     displayPlayers.forEach(player => {
-      game.appendChild(
+      content.appendChild(
         createPlayerRow(player, dateKey)
       );
     });
+
+    toggle.addEventListener("click", () => {
+      const isOpen = toggle.getAttribute("aria-expanded") === "true";
+      toggle.setAttribute("aria-expanded", String(!isOpen));
+      content.hidden = isOpen;
+    });
+
+    game.append(toggle, content);
 
     return game;
   }
@@ -943,23 +1117,91 @@ button:disabled.selected {
 
     let answered = 0;
 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const activeState = getActiveState();
+
     games.forEach(gameData => {
       const dateKey = gameData[0];
-
-      const activeState = getActiveState();
 
       if (activeState[currentPlayer][dateKey]?.status) {
         answered++;
       }
-
-      gamesEl.appendChild(createGameCard(gameData));
     });
 
     summary.textContent =
       `${currentPlayer}: ${answered}/${games.length} games answered`;
 
+    const pastGames = games.filter(([dateKey]) => {
+      const gameDate = new Date(`${dateKey}T00:00:00`);
+      return gameDate < today;
+    });
+
+    const upcomingGames = games.filter(([dateKey]) => {
+      const gameDate = new Date(`${dateKey}T00:00:00`);
+      return gameDate >= today;
+    });
+
+    const nextGameDate = upcomingGames[0]?.[0] ?? null;
+
+    if (upcomingGames.length) {
+      const upcomingHeading = document.createElement("h2");
+      upcomingHeading.className = "fixtures-heading";
+      upcomingHeading.textContent = "Upcoming games";
+      gamesEl.appendChild(upcomingHeading);
+
+      upcomingGames.forEach(gameData => {
+        const isNextGame = gameData[0] === nextGameDate;
+
+        gamesEl.appendChild(
+          createGameCard(gameData, {
+            isNextGame,
+            startOpen: isNextGame
+          })
+        );
+      });
+    }
+
+    if (pastGames.length) {
+      const pastToggle = document.createElement("button");
+      pastToggle.type = "button";
+      pastToggle.className = "past-games-toggle";
+      pastToggle.setAttribute("aria-expanded", "false");
+      pastToggle.innerHTML = `
+        <span>Past games (${pastGames.length})</span>
+        <span aria-hidden="true">⌄</span>
+      `;
+
+      const pastContainer = document.createElement("div");
+      pastContainer.className = "past-games";
+
+      pastGames
+        .slice()
+        .reverse()
+        .forEach(gameData => {
+          pastContainer.appendChild(
+            createGameCard(gameData, {
+              isPastGame: true,
+              startOpen: false
+            })
+          );
+        });
+
+      pastToggle.addEventListener("click", () => {
+        const isOpen = pastToggle.getAttribute("aria-expanded") === "true";
+        pastToggle.setAttribute("aria-expanded", String(!isOpen));
+        pastContainer.classList.toggle("open", !isOpen);
+
+        pastToggle.lastElementChild.textContent = isOpen ? "⌄" : "⌃";
+      });
+
+      gamesEl.append(pastToggle, pastContainer);
+    }
+
     gamesEl.appendChild(createBottomLogoutButton());
   }
+
 
 
   // ------------------------------------------------------------
